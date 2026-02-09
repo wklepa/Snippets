@@ -10,13 +10,14 @@ except ImportError as e:
     sys.exit(1)
 
 """
-Define default values for CSV folder, projects folder, output file, output extension, and CSV header and script info.
+ --- CONFIGURATION ---
 """
 defualtCsvFolder: str = r"N:\Temp\13. DT general\Project List Jira"
 defaultProjectsFolder: str = r"X:\2. Projects"
 defaultOutputFile: str = "DesignInc_ProjectList v"
 defaulOutputExtension: str = ".csv"
 csvHeader: str = "Id,ProjectNumber,Projectname,Assignee,IsActive,NameNumber"
+
 # Generate office-wide projects
 officeWide: dict[str, str] = {
     "PXX-XX1": "Project Start-up",
@@ -29,13 +30,17 @@ defaultAssignee: str = "wklepacki@sydney.designinc.com.au"
 scriptInfo: str = f"A script to list all the projects in {defaultProjectsFolder} folder\nProjects are exported to {defualtCsvFolder}\nfolder, and placed in the latest CSV (vXX).\nwklepacki@sydney.designinc.com.au 2024-2026"
 
 
-"""
-Generate office-wide projects to be added to the CSV file
-Returns a list of formatted project data, takes a dictionary of project numbers and names, and an assignee email address
-"""
-
-
 def ProjectsOfficeWide(projectOfficeWide: dict[str, str], assignee: str) -> list[str]:
+    """
+    Generates a list of office-wide projects formatted for the CSV file.
+
+    Args:
+        projectOfficeWide (dict[str, str]): Dictionary mapping project numbers to names.
+        assignee (str): Email address of the project assignee.
+
+    Returns:
+        list[str]: A list of formatted project data strings.
+    """
     officeProjects = []  # Initialize an empty list to store the formatted project data
     for getNumber, getName in projectOfficeWide.items():
         wrapName: str = '"' + getName + '"'  # Wrap the name in double quotes
@@ -49,15 +54,21 @@ def ProjectsOfficeWide(projectOfficeWide: dict[str, str], assignee: str) -> list
     return officeProjects
 
 
-"""
-Function to format a header. It centers the lines and infills spaces with border
-symbols and whitespaces.
-"""
-
-
 def formatHeader(
     header: str, symbolNum: int = 3, spaceNum: int = 3, symbolTyp: str = "*"
 ) -> str:
+    """
+    Formats a header by centering the lines and infilling spaces with border symbols.
+
+    Args:
+        header (str): Header text to be formatted.
+        symbolNum (int): Number of symbols on each side of the header.
+        spaceNum (int): Number of spaces between the header and the border.
+        symbolTyp (str): Symbol type to use for the border.
+
+    Returns:
+        str: The formatted header string.
+    """
     # Clean and split lines
     lines = [line.strip() for line in header.split("\n")]
     if not any(lines):
@@ -87,14 +98,17 @@ def formatHeader(
     return "\n".join(tempHeader) + "\n"
 
 
-"""
-Function to find the latest version number in a folder
-@param csvFolder: The folder path to search for CSV files
-@return: The latest version number found, or None if no versions are found
-"""
-
-
 def findVersion(csvFolder: str) -> int | None:
+    """
+    Finds the latest version number in a folder by checking file names.
+    Assumes files are named with a 'v' followed by the version number (e.g., '...v12.csv').
+
+    Args:
+        csvFolder (str): The folder path to search for CSV files.
+
+    Returns:
+        int | None: The latest version number found, or None if no versions are found.
+    """
     extension: str = ".csv"  # Extension for CSV files
     versions: list[int] = []  # List to store versions
     for item in os.listdir(csvFolder):
@@ -112,14 +126,17 @@ def findVersion(csvFolder: str) -> int | None:
     return max(versions) if versions else None  # Return None if no versions found
 
 
-"""
-Function to list all projects in a folder
-@param projectsFolder: The folder path to search for projects
-@return: A list of project numbers and names
-"""
-
-
 def projectList(projectsFolder: str, assignee: str):
+    """
+    Lists all projects in the specified folder and adds office-wide defaults.
+
+    Args:
+        projectsFolder (str): The folder path to search for projects.
+        assignee (str): Email address of the project assignee.
+
+    Returns:
+        list[str] | None: A list of formatted project strings including the header.
+    """
     projectNumberName: list[
         str
     ] = []  # Initialize an empty list to store project number and name
@@ -162,17 +179,6 @@ def projectList(projectsFolder: str, assignee: str):
     return projectNumberName + officeWideXXX if projectNumberName else None
 
 
-"""
-Function to write a CSV file with project information
-@param projectNumberName: List of project numbers and names
-@param outputFolder: Folder path to save the CSV file
-@param outputName: Name of the CSV file
-@param outputExtension: Extension of the CSV file
-@param version: Version number of the CSV file
-@return: Name of the CSV file
-"""
-
-
 def writeFile(
     projectNumberName: list[str],
     outputFolder: str,
@@ -180,6 +186,19 @@ def writeFile(
     outputExtension: str,
     version: int,
 ) -> str:
+    """
+    Writes the project list to a CSV file with an incremented version number.
+
+    Args:
+        projectNumberName (list[str]): List of project numbers and names.
+        outputFolder (str): Folder path to save the CSV file.
+        outputName (str): Base name of the CSV file.
+        outputExtension (str): Extension of the CSV file.
+        version (int): Current version number.
+
+    Returns:
+        str: Name of the created CSV file.
+    """
     # Create version
     versionString: str = str(version + 1)
     # Create file name
@@ -194,7 +213,9 @@ def writeFile(
     return fileName
 
 
-# Make the script work
+"""
+ --- EXECUTION ---
+"""
 listOfProjects: list[str] | None = projectList(
     defaultProjectsFolder, defaultAssignee
 )  # Call projectList function
