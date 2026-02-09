@@ -17,8 +17,38 @@ defaultProjectsFolder: str = r"X:\2. Projects"
 defaultOutputFile: str = "DesignInc_ProjectList v"
 defaulOutputExtension: str = ".csv"
 csvHeader: str = "Id,ProjectNumber,Projectname,Assignee,IsActive,NameNumber"
-
+# Generate office-wide projects
+officeWide: dict[str, str] = {
+    "PXX-XX1": "Project Start-up",
+    "PXX-XX2": "Officewide Implementation",
+    "PXX-XX3": "General Request",
+}
+# Default project assignee
+defaultAssignee: str = "wklepacki@sydney.designinc.com.au"
+# Script information
 scriptInfo: str = f"A script to list all the projects in {defaultProjectsFolder} folder\nProjects are exported to {defualtCsvFolder}\nfolder, and placed in the latest CSV (vXX).\nwklepacki@sydney.designinc.com.au 2024-2026"
+
+
+"""
+Generate office-wide projects to be added to the CSV file
+Returns a list of formatted project data, takes a dictionary of project numbers and names, and an assignee email address
+"""
+
+
+def ProjectsOfficeWide(projectOfficeWide: dict[str, str], assignee: str) -> list[str]:
+    officeProjects = []  # Initialize an empty list to store the formatted project data
+    for getNumber, getName in projectOfficeWide.items():
+        wrapName: str = '"' + getName + '"'  # Wrap the name in double quotes
+        wrapNumberName: str = (
+            '"' + getNumber + " " + getName + '"'
+        )  # Wrap the number and name in double quotes
+        numberName: str = f"{getNumber},{getNumber},{wrapName},{assignee},TRUE,{wrapNumberName}"  # Format the number and name as a string
+        officeProjects.append(
+            numberName
+        )  # Append the formatted project data to the list
+    return officeProjects
+
+
 """
 Function to format a header. It centers the lines and infills spaces with border
 symbols and whitespaces.
@@ -89,12 +119,11 @@ Function to list all projects in a folder
 """
 
 
-def projectList(projectsFolder: str):
+def projectList(projectsFolder: str, assignee: str):
     projectNumberName: list[
         str
     ] = []  # Initialize an empty list to store project number and name
     projectNumberName.append(csvHeader)  # Append the header row to the list
-    defaultAssignee: str = "wklepacki@sydney.designinc.com.au"
 
     # Check if the projects folder exists and list its contents
     if os.path.isdir(projectsFolder):
@@ -124,12 +153,13 @@ def projectList(projectsFolder: str):
                         '"' + getName + '"'
                     )  # Wrap the name in double quotes
                     wrapNumberName: str = '"' + getNumber + " " + getName + '"'
-                    numberName: str = f"{getNumber},{getNumber},{wrapName},{defaultAssignee},TRUE,{wrapNumberName}"  # Format the number and name as a string
+                    numberName: str = f"{getNumber},{getNumber},{wrapName},{assignee},TRUE,{wrapNumberName}"  # Format the number and name as a string
                     # Append the formatted string to the projectNumberName list
                     projectNumberName.append(numberName)
 
     # Return the projectNumberName list if it's not empty, otherwise return None
-    return projectNumberName if projectNumberName else None
+    officeWideXXX: list[str] = ProjectsOfficeWide(officeWide, defaultAssignee)
+    return projectNumberName + officeWideXXX if projectNumberName else None
 
 
 """
@@ -166,7 +196,7 @@ def writeFile(
 
 # Make the script work
 listOfProjects: list[str] | None = projectList(
-    defaultProjectsFolder
+    defaultProjectsFolder, defaultAssignee
 )  # Call projectList function
 currentVersion: int | None = findVersion(defualtCsvFolder)  # Call findVersion function
 
@@ -183,8 +213,15 @@ if listOfProjects and currentVersion:
             defaulOutputExtension,
             currentVersion,
         )
+        # Print statistics
         print(f"\nDirectory: {defualtCsvFolder}")
         print(f"File {outputName} created successfully!")
-        print(f"Projects Synced: {len(listOfProjects) - 1}")
+        print(
+            f"Projects Synced: {len(listOfProjects) - 1}\nThe sample outout listed below:"
+        )
+        # Output the first 10 projects
+        for index, project in enumerate(listOfProjects):
+            if index < 10:
+                print(f"Project {index + 1}: {project}")
     except Exception as e:
         print(f"\nCRITICAL ERROR: Could not write file:\n{e}")
