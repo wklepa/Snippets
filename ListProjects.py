@@ -1,5 +1,8 @@
 import sys
 
+"""
+Ensure that the required modules are installed.
+"""
 try:
     import os
 except ImportError as e:
