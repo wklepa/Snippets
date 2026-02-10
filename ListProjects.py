@@ -12,10 +12,10 @@ except ImportError as e:
 """
  --- CONFIGURATION ---
 """
-defualtCsvFolder: str = r"N:\Temp\13. DT general\Project List Jira"
+defaultCsvFolder: str = r"N:\Temp\13. DT general\Project List Jira"
 defaultProjectsFolder: str = r"X:\2. Projects"
 defaultOutputFile: str = "DesignInc_ProjectList v"
-defaulOutputExtension: str = ".csv"
+defaultOutputExtension: str = ".csv"
 csvHeader: str = "Id,ProjectNumber,Projectname,Assignee,IsActive,NameNumber"
 
 # Generate office-wide projects
@@ -27,7 +27,7 @@ officeWide: dict[str, str] = {
 # Default project assignee
 defaultAssignee: str = "wklepacki@sydney.designinc.com.au"
 # Script information
-scriptInfo: str = f"A script to list all the projects in {defaultProjectsFolder} folder\nProjects are exported to {defualtCsvFolder}\nfolder, and placed in the latest CSV (vXX).\nwklepacki@sydney.designinc.com.au 2024-2026"
+scriptInfo: str = f"A script to list all the projects in {defaultProjectsFolder} folder\nProjects are exported to {defaultCsvFolder}\nfolder, and placed in the latest CSV (vXX).\nwklepacki@sydney.designinc.com.au 2024-2026"
 
 
 def ProjectsOfficeWide(projectOfficeWide: dict[str, str], assignee: str) -> list[str]:
@@ -219,7 +219,7 @@ def writeFile(
 listOfProjects: list[str] | None = projectList(
     defaultProjectsFolder, defaultAssignee
 )  # Call projectList function
-currentVersion: int | None = findVersion(defualtCsvFolder)  # Call findVersion function
+currentVersion: int | None = findVersion(defaultCsvFolder)  # Call findVersion function
 
 # Call the writeFile function if listOfProjects and currentVersion are not None
 if listOfProjects and currentVersion:
@@ -229,16 +229,16 @@ if listOfProjects and currentVersion:
     try:
         outputName: str = writeFile(
             listOfProjects,
-            defualtCsvFolder,
+            defaultCsvFolder,
             defaultOutputFile,
-            defaulOutputExtension,
+            defaultOutputExtension,
             currentVersion,
         )
         # Print statistics
-        print(f"\nDirectory: {defualtCsvFolder}")
+        print(f"\nDirectory: {defaultCsvFolder}")
         print(f"File {outputName} created successfully!")
         print(
-            f"Projects Synced: {len(listOfProjects) - 1}\nThe sample outout listed below:"
+            f"Projects Synced: {len(listOfProjects) - 1}\nThe sample output listed below:"
         )
         # Output the first 10 projects
         for index, project in enumerate(listOfProjects):
