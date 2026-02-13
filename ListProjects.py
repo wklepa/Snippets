@@ -126,7 +126,7 @@ def findVersion(csvFolder: str) -> int | None:
     return max(versions) if versions else None  # Return None if no versions found
 
 
-def projectList(projectsFolder: str, assignee: str):
+def projectList(projectsFolder: str, assignee: str) -> list[str] | None:
     """
     Lists all projects in the specified folder and adds office-wide defaults.
 
