@@ -69,28 +69,28 @@ def formatHeader(
     Returns:
         str: The formatted header string.
     """
-    # Clean and split lines
-    lines = [line.strip() for line in header.split("\n")]
-    if not any(lines):
+    # Clean and split lines return "" if lines is empty
+    lines: list[str] = [line.strip() for line in header.split("\n")]
+    if not lines:
         return ""
 
     # Calculate dimensions
-    max_line_len = max(len(line) for line in lines)
+    max_line_len: int = max(len(line) for line in lines)
     # Total width of the entire header block
-    total_width = max_line_len + 2 * (symbolNum + spaceNum)
+    total_width: int = max_line_len + 2 * (symbolNum + spaceNum)
     # The width available for text + internal padding
-    content_width = total_width - (2 * symbolNum)
+    content_width: int = total_width - (2 * symbolNum)
 
     # Build the components
-    border_line = symbolTyp * total_width
-    side_border = symbolTyp * symbolNum
+    border_line: str = symbolTyp * total_width
+    side_border: str = symbolTyp * symbolNum
 
-    tempHeader = [border_line]
+    tempHeader: list[str] = [border_line]
 
     for line in lines:
         # The '^' centers the text within 'content_width'
         # f-string syntax: {value:^[width]}
-        centered_text = f"{line:^{content_width}}"
+        centered_text: str = f"{line:^{content_width}}"
         tempHeader.append(f"{side_border}{centered_text}{side_border}")
 
     tempHeader.append(border_line)
