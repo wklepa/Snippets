@@ -140,6 +140,9 @@ def projectList(projectsFolder: str, assignee: str):
     projectNumberName: list[
         str
     ] = []  # Initialize an empty list to store project number and name
+    mainNameCount: dict[
+        str, int
+    ] = {}  # Initialize an empty dictionary to store main project names and their counts
     projectNumberName.append(csvHeader)  # Append the header row to the list
 
     # Check if the projects folder exists and list its contents
@@ -173,10 +176,16 @@ def projectList(projectsFolder: str, assignee: str):
                     numberName: str = f"{getNumber},{getNumber},{wrapName},{assignee},TRUE,{wrapNumberName}"  # Format the number and name as a string
                     # Append the formatted string to the projectNumberName list
                     projectNumberName.append(numberName)
+                mainNameCount[project] = len(
+                    os.listdir(os.path.join(projectsFolder, project))
+                )
 
     # Return the projectNumberName list if it's not empty, otherwise return None
     officeWideXXX: list[str] = ProjectsOfficeWide(officeWide, defaultAssignee)
-    return projectNumberName + officeWideXXX if projectNumberName else None
+    return (
+        projectNumberName + officeWideXXX if projectNumberName else None,
+        mainNameCount,
+    )
 
 
 def writeFile(
@@ -213,12 +222,42 @@ def writeFile(
     return fileName
 
 
+def plotBarScale(dataToPlot: dict[str, int], maxBarSize: int = 50) -> None:
+    """
+    Generates a list of office-wide projects formatted for the CSV file.
+
+    Args:
+        dataToPlot (list[str]): List of string to visualize.
+        maxBarSize (int): Maximum length of the bar. The default is given.
+
+    Returns:
+        None
+    """
+    if not dataToPlot:
+        return None
+
+    charBar: str = "█"  # Default bar character
+    dataNames: list[str] = list(dataToPlot.keys())
+    countDataPlot: list[int] = [x for x in dataToPlot.values()]
+    maxDataPLot: int = max(countDataPlot)  # Calculatalue longest value
+    lenStrData = len(str(maxDataPLot))  # Calculate number padding
+
+    for index, number in enumerate(countDataPlot):
+        name = dataNames[index]
+        # Calculate bar length in relationship to maxBarSize
+        numberBar: str = charBar * int(number / maxDataPLot * maxBarSize)
+        print(f"{name} | {str(number).rjust(lenStrData)}: {numberBar}")
+
+
 """
  --- EXECUTION ---
 """
-listOfProjects: list[str] | None = projectList(
-    defaultProjectsFolder, defaultAssignee
-)  # Call projectList function
+listOfProjects: list[str] | None = projectList(defaultProjectsFolder, defaultAssignee)[
+    0
+]  # List of projects to be exported to file
+dirNamesCount: dict[str, int] = projectList(defaultProjectsFolder, defaultAssignee)[
+    1
+]  # Dictionary of directory names and their counts
 currentVersion: int | None = findVersion(defaultCsvFolder)  # Call findVersion function
 
 # Call the writeFile function if listOfProjects and currentVersion are not None
@@ -234,11 +273,13 @@ if listOfProjects and currentVersion:
             defaultOutputExtension,
             currentVersion,
         )
+        # Print bar scale
+        plotBarScale(dirNamesCount)
         # Print statistics
         print(f"\nDirectory: {defaultCsvFolder}")
         print(f"File {outputName} created successfully!")
         print(
-            f"Projects Synced: {len(listOfProjects) - 1}\nThe sample output listed below:"
+            f"Projects Synced: {len(listOfProjects) - 1}\nThe sample output is listed below:\n"
         )
         # Output the first 10 projects
         for index, project in enumerate(listOfProjects):
