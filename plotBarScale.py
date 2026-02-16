@@ -13,8 +13,13 @@ def plotBarScale(dataToPlot: dict[str, int], maxBarSize: int = 50) -> None:
         return None
 
     charBar: str = "█"  # Default bar character
-    dataNames: list[str] = list(dataToPlot.keys())
-    countDataPlot: list[int] = [x for x in dataToPlot.values()]
+    dataNames: list[str] = list(
+        dataToPlot.keys()
+    )  #  Extract names from dictionary keys
+    namesLengthMax: int = max([len(x) for x in dataNames])  # Calculate longest name
+    countDataPlot: list[int] = [
+        x for x in dataToPlot.values()
+    ]  # Extract numbers from dictionary values
     maxDataPLot: int = max(countDataPlot)  # Calculatalue longest value
     lenStrData = len(str(maxDataPLot))  # Calculate number padding
 
@@ -22,11 +27,14 @@ def plotBarScale(dataToPlot: dict[str, int], maxBarSize: int = 50) -> None:
         name = dataNames[index]
         # Calculate bar length in relationship to maxBarSize
         numberBar: str = charBar * int(number / maxDataPLot * maxBarSize)
-        print(f"{name} | {str(number).rjust(lenStrData)}: {numberBar}")
+        print(
+            f"{name.ljust(namesLengthMax)} | {str(number).rjust(lenStrData)}: {numberBar}"
+        )
 
 
 """"
 ---- SAMPLE ----
-nameA | countA ███████████
-nameB | countB █████
+CiarainCooney |  23: ██████████
+Alexander     |  78: █████████████████████████████████████
+Woy           | 105: ██████████████████████████████████████████████████
 """
