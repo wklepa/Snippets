@@ -23,6 +23,7 @@ officeWide: dict[str, str] = {
     "PXX-XX1": "Project Start-up",
     "PXX-XX2": "Officewide Implementation",
     "PXX-XX3": "General Request",
+    "PXX-XX4": "Research and Development",
 }
 # Default project assignee
 defaultAssignee: str = "wklepacki@sydney.designinc.com.au"
