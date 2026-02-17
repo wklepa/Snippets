@@ -1,3 +1,4 @@
+# ---- IMPORTS ----
 import os
 
 import pandas as pd
@@ -49,6 +50,16 @@ def formatHeader(
 
 
 def LoadJiraToken(FilePath: str) -> str | None:
+    """
+    Reads a Jira API token from a local text file.
+    Current Jira tolen will expire on 16/02/2027
+
+    Args:
+        FilePath (str): The full system path to the .txt file containing the token.
+
+    Returns:
+        str | None: The stripped token string if found, otherwise None.
+    """
     try:
         with open(FilePath, "r") as F:
             return F.read().strip()
@@ -58,12 +69,33 @@ def LoadJiraToken(FilePath: str) -> str | None:
 
 
 def ValueDefaultStr(Value: any, Default: str = "-") -> str:
+    """
+    Ensures a value is returned as a clean string, applying a default if empty or None.
+
+    Args:
+        Value (any): The data to be converted/checked.
+        Default (str): The fallback string to use if the value is missing.
+
+    Returns:
+        str: The cleaned string or the default fallback.
+    """
     if Value is None or str(Value).strip() == "":
         return Default
     return str(Value).strip()
 
 
 def FetchJiraData(JiraInstance: Jira, JqlQuery: str, ProjectFieldId: str) -> list:
+    """
+    Executes a JQL query and parses the results into a list of clean dictionaries.
+
+    Args:
+        JiraInstance (Jira): An authenticated Atlassian-Python-API Jira object.
+        JqlQuery (str): The JQL string used to filter issues.
+        ProjectFieldId (str): The custom field ID used for "Project Name" in Jira.
+
+    Returns:
+        list: A list of dictionaries, where each dictionary represents one Jira issue.
+    """
     Results: dict = JiraInstance.jql(JqlQuery)
     IssuesList: list = Results.get("issues", [])
     DataRows: list = []
@@ -106,6 +138,17 @@ def FetchJiraData(JiraInstance: Jira, JqlQuery: str, ProjectFieldId: str) -> lis
 def ExportToExcelTable(
     Data: list, FileName: str, SheetName: str = "Jira_issues"
 ) -> None:
+    """
+    Exports a list of Jira issues to an Excel file formatted as an Excel Table.
+
+    If no data is provided, an Excel file with a placeholder row of dashes is created
+    to maintain reporting consistency.
+
+    Args:
+        Data (list): List of dictionaries containing issue data.
+        FileName (str): Local system path where the .xlsx file will be saved.
+        SheetName (str): The name to assign to the Excel worksheet. Defaults to "Jira_issues".
+    """
     # If no data is found, create a single row of placeholders
     if not Data:
         print(f"No Jira issues found. Creating placeholder report at {FileName}")
@@ -169,7 +212,7 @@ ProjectFieldId: str = "customfield_10047"
 ApiToken = LoadJiraToken(TokenPath)
 
 if ApiToken:
-    ScriptInfo: str = "A script to export DT Team Jira issues to the Excel files.\nA seprate files to report Work In Progress and Submissions\nissues will be created in a local folder.\nwklepacki@sydney.designinc.com.au 2024-2026"
+    ScriptInfo: str = "A script to export DT Team Jira issues to the Excel files.\nA seprate files to report Work In Progress and Submissions\nissues will be created in a local folder.\nCurrent Jira token will expire on the 16/02/2027\nwklepacki@sydney.designinc.com.au 2024-2026"
     FormattedMessage = formatHeader(ScriptInfo)
     print(FormattedMessage)
     JiraInstance = Jira(url=JiraUrl, username=UserEmail, password=ApiToken, cloud=True)
