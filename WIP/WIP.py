@@ -1,4 +1,2 @@
-print("Hello World")
-
-for i in range(0, 7):
-    print(f"{i}!")
+import numpy as np
+import pandas as pd
