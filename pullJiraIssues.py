@@ -1,8 +1,17 @@
 # ---- IMPORTS ----
-import os
+import sys
 
-import pandas as pd
-from atlassian import Jira
+"""
+Ensure that the required modules are installed.
+"""
+try:
+    import os
+
+    import pandas as pd
+    from atlassian import Jira
+except ImportError as e:
+    print(f"Error importing module: {e}")
+    sys.exit(1)
 
 
 def formatHeader(
