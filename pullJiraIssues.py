@@ -6,6 +6,7 @@ Ensure that the required modules are installed.
 """
 try:
     import os
+    import shutil
 
     import pandas as pd
     from atlassian import Jira
@@ -56,6 +57,24 @@ def formatHeader(
     tempHeader.append(border_line)
     # Return formatted output
     return "\n".join(tempHeader) + "\n"
+
+
+def copyFile(src: str, dst: str) -> None:
+    """
+    Copies a file from source to destination.
+
+    Args:
+        src (str): The full system path to the source file.
+        dst (str): The full system path to the destination file.
+
+    Returns:
+        None
+    """
+    try:
+        shutil.copy(src, dst)
+        print(f"File copied successfully to {dst}")
+    except Exception as e:
+        print(f"Error copying file: {e}")
 
 
 def LoadJiraToken(FilePath: str) -> str | None:
@@ -210,13 +229,16 @@ def ExportToExcelTable(
 JiraUrl: str = "https://sydneydesigninc.atlassian.net"
 UserEmail: str = "wklepacki@sydney.designinc.com.au"
 TokenPath: str = r"D:\Backup\Scripts\Jira\jira_credentials.txt"
-ExcelPathAllIssues: str = (
-    r"N:\Temp\13. DT general\Project List Jira\Issues report\All_Issues_Jira.xlsx"
-)
-ExcelPathSubmisions: str = (
-    r"N:\Temp\13. DT general\Project List Jira\Issues report\Submissions_Jira.xlsx"
-)
+ExcelPath: str = r"N:\Temp\13. DT general\Project List Jira\Issues report"
+OneDrivePath: str = r"C:\Users\wklepacki\OneDrive - DesignInc Sydney Pty Ltd\Reports"
+AllIssues: str = "All_Issues_Jira.xlsx"
+Submisions: str = "Submissions_Jira.xlsx"
+ExcelPathAllIssues: str = os.path.join(ExcelPath, AllIssues)
+ExcelPathSubmisions: str = os.path.join(ExcelPath, Submisions)
+SharePointPathAllIssues: str = os.path.join(OneDrivePath, AllIssues)
+SharePointPathSubmissions: str = os.path.join(OneDrivePath, Submisions)
 ProjectFieldId: str = "customfield_10047"
+
 
 ApiToken = LoadJiraToken(TokenPath)
 
@@ -235,5 +257,11 @@ if ApiToken:
 
     DataAllIssues = FetchJiraData(JiraInstance, BimQueryAllIssue, ProjectFieldId)
     DataSubmissions = FetchJiraData(JiraInstance, BimQuerySubmissions, ProjectFieldId)
-    ExportToExcelTable(DataAllIssues, ExcelPathAllIssues)
-    ExportToExcelTable(DataSubmissions, ExcelPathSubmisions)
+    try:
+        ExportToExcelTable(DataAllIssues, ExcelPathAllIssues)
+        ExportToExcelTable(DataSubmissions, ExcelPathSubmisions)
+        copyFile(ExcelPathAllIssues, SharePointPathAllIssues)
+        copyFile(ExcelPathSubmisions, SharePointPathSubmissions)
+        print("\nUpdate SharePoint page uploading Excel files".upper())
+    except Exception as e:
+        print(f"Error copying files: {e}")
