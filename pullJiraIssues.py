@@ -240,7 +240,8 @@ SharePointPathSubmissions: str = os.path.join(OneDrivePath, Submisions)
 ProjectFieldId: str = "customfield_10047"
 
 
-ApiToken = LoadJiraToken(TokenPath)
+ApiToken: str | None = LoadJiraToken(TokenPath)
+CopyFlag: bool = False  # Copy files to SharePoint if True
 
 if ApiToken:
     ScriptInfo: str = "A script to export DT Team Jira issues to the Excel files.\nA seprate files to report Work In Progress and Submissions\nissues will be created in a local folder.\nCurrent Jira token will expire on the 16/02/2027\nwklepacki@sydney.designinc.com.au 2024-2026"
@@ -260,8 +261,9 @@ if ApiToken:
     try:
         ExportToExcelTable(DataAllIssues, ExcelPathAllIssues)
         ExportToExcelTable(DataSubmissions, ExcelPathSubmisions)
-        copyFile(ExcelPathAllIssues, SharePointPathAllIssues)
-        copyFile(ExcelPathSubmisions, SharePointPathSubmissions)
-        print("\nUpdate SharePoint page uploading Excel files".upper())
+        if CopyFlag:
+            copyFile(ExcelPathAllIssues, SharePointPathAllIssues)
+            copyFile(ExcelPathSubmisions, SharePointPathSubmissions)
+            print("\nUpdate SharePoint page uploading Excel files".upper())
     except Exception as e:
         print(f"Error copying files: {e}")
