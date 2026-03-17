@@ -249,7 +249,8 @@ if ApiToken:
     print(FormattedMessage)
     JiraInstance = Jira(url=JiraUrl, username=UserEmail, password=ApiToken, cloud=True)
     BimQueryAllIssue = (
-        'project = "BIM Support Team" AND status IN ("Work in Progress", "Open")'
+        'project = "BIM Support Team" AND type != "BIM Submission Assistance"'
+        'AND status IN ("Work in Progress", "Open")'
     )
     BimQuerySubmissions = (
         'project = "BIM Support Team" AND type = "BIM Submission Assistance" '
@@ -265,5 +266,6 @@ if ApiToken:
             copyFile(ExcelPathAllIssues, SharePointPathAllIssues)
             copyFile(ExcelPathSubmisions, SharePointPathSubmissions)
             print("\nUpdate SharePoint page uploading Excel files".upper())
+        os.startfile(ExcelPath)
     except Exception as e:
         print(f"Error copying files: {e}")
