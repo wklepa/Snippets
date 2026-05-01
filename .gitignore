@@ -5,7 +5,10 @@ __pycache__/
 .venv/
 .env
 
-# Windows
+# Windows/OSX
 Thumbs.db
 desktop.ini
 .DS_Store
+
+# Work in Progress
+WIP/
