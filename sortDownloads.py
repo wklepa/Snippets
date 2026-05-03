@@ -20,7 +20,7 @@ CATEGORIES = [
     {"folder": "APP", "types": [".deb", ".rpm", ".sh", ".appimage"]},
 ]
 
-downloads_folder = r"/home/voy/Downloads"
+downloads_folder = os.path.expanduser("~/Downloads")
 counter = 0
 
 
